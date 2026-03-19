@@ -1,0 +1,5 @@
+
+
+ gcc -Wall -Wextra -w -lcrypto -lsdl2 creep -o creep 
+
+ 
