@@ -3,10 +3,26 @@
 #include <string.h>
 #include <stdlib.h> 
 
+int ReadFromFile_i(char* filename)
+{
+  FILE *fp = fopen(filename,O_RDONLY);
+  if(fp==NULL)
+  {
+    printf("Cannot open file or file does not exsits.");
+    return 1;
+  }
+  else 
+  {
+    char buffer[1024];
+    char* ReadFromFile = fgets(buffer,sizeof(buffer),fp);
+    printf("%s\n",ReadFromFile)
+  }
+}
+
 int main(int argc,char** argv)
 {
   // if there are no flags 
-  if(argc==2){
+  if(argc==2 && strcmp(argv[1],"help")!=0){
     // declaration of delim 
     const char *delim = ".";
     // declaration of program name 
@@ -36,11 +52,11 @@ int main(int argc,char** argv)
     system(buff);
     // freeing memory 
     free(buff);
-    printf("[#] Compiled Into %s [#]\n",NameOfTheProgram);
+    printf("Compiling %s.\n",NameOfTheProgram);
     return 0;
   }
   // if there are flags 
-  else if (argc>=3)
+  else if (argc>=3 && strcmp(argv[1],"help")!=0)
   {
     // declaration of variables ;
     char *ProgramName = argv[1];
@@ -51,7 +67,7 @@ int main(int argc,char** argv)
     //allocating buffer through malloc 
     char *buffer = malloc(100*4);
     
-    printf("[#] Compiling %s Using GCC [#]",ProgramName);
+    printf("Compiling %s.",ProgramName);
     // copying the gcc string into buffer after allocating memory 
     strcpy(buffer,"gcc ");
     
@@ -77,13 +93,17 @@ int main(int argc,char** argv)
 
     // printing the result of executing buffer 
     
-    printf("[#] Compiled %s Into %s [#]",)
+    printf("Compiled %s into %s.",ProgramName,CompiledProgramName);
     // freeing buffer->compiling time needed buffer !
     free(buffer);
 
     return 0;
 
   }
+  else if (argc==1 || strcmp(argv[1],"help")==0)
+  {
+    printf("Help Menu.\n");
+    printf("Usage: cc demo.c demo -flags. \nFlags: -it can be of any type. \n");
+  }
 
-  return 0;
 }
