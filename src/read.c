@@ -1,23 +1,33 @@
+// made by shankkyyyyy
+
 #include <stdlib.h> 
 #include <stdio.h> 
 #include <string.h>
 
+// function checks if there is a file named arg filename 
+// function returns int -> 1 for failed and 0 for success
+//
 int Istherefile_i(char* filename)
 {
+  // opens a fd to fp 
   FILE *fp = fopen(filename,"r");
+  // returns NULL if failed
+  
   if(fp==NULL)
-  {
-    printf("The does not exsits.");
-    return 1;
-  }
+  	return 1; // error handling must be done by the called of this function.
   else 
-  {
-    return 0;
-  }
+        return 0;
 }
 
-char* ReadFromFile_i(char* filename)
+// this function reads from the arg filename
+// this returns a pointer char 
+// returns the whole fileoutput 
+
+char* ReadFromFile_pC(char* filename)
 {
+  // opens a fd -> fp.
+  
+  
   FILE *fp = fopen(filename,"r");
   if(fp==NULL)
   {
