@@ -56,6 +56,7 @@ int end(char *Filename,char *args,char *OutputName)
 	free(Filename);
 	free(args);
 	free(OutputName);
+	goto main;
 }
 
 
@@ -120,7 +121,6 @@ char* parse(char* filename)
         // j is for first time copying values into buffer. then no need for the strcpy function.
         if (j==1)
         {
-	  printf("\nbuffer: %s\n",buffer);
           strcpy(args,buffer);
 	  j++;
 	  continue;
@@ -128,7 +128,6 @@ char* parse(char* filename)
 
 	if (strcmp(buffer,"endhl")==0)
 	{
-	   printf("\n FOUND endhl. moving to output name");
 	   
 	  OutputName =  output_f(buffer,OutputName,fp);
 	  // buffer's allocated memory has been free'ed from function-> output_f;
@@ -139,7 +138,6 @@ char* parse(char* filename)
         else if (!j==0)
 	{
 	// add space to args
-         printf("\n 2, Buffer: %s \n",buffer);
 	 strcat(args," ");
 	 // concatenate the buffer to args
          strcat(args,buffer);
@@ -157,6 +155,6 @@ char* parse(char* filename)
 
 int main()
 {
-  char* killi = parse("test.txt");
+  char* killi = parse("real.txt");
   return 0;
 }
