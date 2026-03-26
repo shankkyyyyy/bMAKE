@@ -21,6 +21,45 @@
 // this is read from the .CCmake file 
 // the .CCmake file does not need to be in a particular order 
 
+
+// checks for outputname; this function is called by args while loop.
+char* output_f(char *buffer,char *OutputName,FILE *fp)
+{	// reads the file
+	if(fgets(buffer,BUFFER_d,fp)!=NULL)
+	{
+	   if(fgets(OutputName,BUFFER_d,fp)!=NULL)
+	   {
+		   printf("\nOutputName: %s\n",OutputName);   
+	   }
+	   else
+	   {
+	   	perror("Can't not read outputname. ");
+		return "failed";
+	   }
+	   
+	}
+	// else statement for failure.
+	else
+	{
+	  perror("Cannot read OutputName. ");
+	  return "failed";
+	}
+	// if success; returns OutputName pointer.
+	free(buffer);	
+	return OutputName;
+       
+}
+
+int end(char *Filename,char *args,char *OutputName)
+{
+	printf("Filename: %s \n args: %s \n OutputName: %s \n",Filename,args,OutputName);
+	free(Filename);
+	free(args);
+	free(OutputName);
+}
+
+
+
 char* parse(char* filename)
 {
   // declaration of variables related to parsing; line 43 to see the use's of this 
@@ -45,81 +84,79 @@ char* parse(char* filename)
   // loop for getting the first line or the contination of lines in the file; to know more read man fgets; 
   while(fgets(buffer,BUFFER_d,fp)!=NULL)
   {
-    
-    printf(" %d: %s",i,buffer);
+    // this removes newline from buffer.
     strtok(buffer,"\n");
-    printf("%s",buffer);
+    // inc the while loop;
     i++;
+
+    // checks if buffer==filename
     if(strcmp(buffer,"filename")==0)
     {
+      // reads filename if it is not null
       if(fgets(Filename,sizeof(Filename),fp)!=NULL)
       {
-        printf("%s",Filename);
+	// prints filename - remove this line !! debugging purpose only.
+	// restarts the while loop;
         continue;
       }
+      // if reading goes to fault this will end up printing error messages.
       else 
       {
         printf("Compiling error at %d \n There is no filename present or NUllable character.\n",i);
         return "failed";
       }
+
     }
+    // checks if buffer == args 
     else if (strcmp(buffer,"args")==0)
     {
+     // new incrementer is placed
       int j = 1;
+      // reads the file and puts the output into buffer if not null and removes the buffer's newline 
+      // all in the while loop.
       while (fgets(buffer,BUFFER_d,fp)!=NULL && strtok(buffer,"\n"))
       {
-        
+
+        // j is for first time copying values into buffer. then no need for the strcpy function.
         if (j==1)
         {
+	  printf("\nbuffer: %s\n",buffer);
           strcpy(args,buffer);
-          printf("string worked. \n");
+	  j++;
+	  continue;
         }
-        
-        else 
-        {
-         strcat(args," ");
+
+	if (strcmp(buffer,"endhl")==0)
+	{
+	   printf("\n FOUND endhl. moving to output name");
+	   
+	  OutputName =  output_f(buffer,OutputName,fp);
+	  // buffer's allocated memory has been free'ed from function-> output_f;
+	  end(Filename,args,OutputName);
+	}
+
+        // this is for concateing the strings together after the first copying into buffer.
+        else if (!j==0)
+	{
+	// add space to args
+         printf("\n 2, Buffer: %s \n",buffer);
+	 strcat(args," ");
+	 // concatenate the buffer to args
          strcat(args,buffer);
-         printf("worked. \n");
+		 
+	 // prints the args 
         }
-
-        printf("%d: %s",j,args);
-        j++;
-        printf("%d",j);
-
-        if (strcmp(buffer,"output")==0)
-
-        {
-          
-          if(fgets(outputname,buffer_d,fp)!=null) 
-          {
-          
-            printf("all got !!\n worked perfectly.");
-          
-          }
-          
-         else   
-         {
-            printf("fgets returned null; ");
-            return "failed";
-          
-         }
-        }
+	// increments j by 1;
       }
 
     }
     
   }
-
-  printf("\n\n %s \n %s \n %s \n Everything data has been collected. \n\n",Filename,args,OutputName);
-  free(buffer);
-  free(args);
-
   return "passed";
 }
 
 int main()
 {
   char* killi = parse("test.txt");
-  printf("Everything is working properly.");
   return 0;
 }

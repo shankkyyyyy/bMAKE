@@ -1,10 +1,11 @@
 filename
-kuttu
+parse.c
 args
-wextra
+is this working
 idk
+wow
 blah
 endhl
 output
-programiscool
+thisistheprogramname
 endhlz
