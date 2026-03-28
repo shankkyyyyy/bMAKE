@@ -51,12 +51,10 @@ char* output_f(char *buffer,char *OutputName,FILE *fp)
        
 }
 
+// debug function.
 int end(char *Filename,char *args,char *OutputName)
 {
-	printf("Filename: %s \n args: %s \n OutputName: %s \n",Filename,args,OutputName);
-	free(Filename);
-	free(args);
-	free(OutputName);
+	printf("%-10s :%s \n%-10s :%s \n%-10s :%s \n","Filename",Filename,"args",args,OutputName,"OutputName");
 	return 0;
 }
 
@@ -76,7 +74,7 @@ char* parse(char* filename)
   if (fp==NULL)
   {
     // strerr.
-    printf("File can't be opened. \n");
+    perror("File can't be opened. \n");
     // 'failed' is the char* for return 1;
     return "failed";
   }
@@ -104,8 +102,8 @@ char* parse(char* filename)
       // if reading goes to fault this will end up printing error messages.
       else 
       {
-        printf("Compiling error at %d \n There is no filename present or NUllable character.\n",i);
-        return "failed";
+        perror("Reading has gone wrong. ");
+	    return NULL;
       }
 
     }

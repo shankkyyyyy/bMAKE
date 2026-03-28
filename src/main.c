@@ -4,25 +4,8 @@
 #include <stdlib.h> 
 #include "parse.h"
 
-int ReadFromFile_i(char* filename)
-{
-  FILE *fp = fopen(filename,"r");
-  if(fp==NULL)
-  {
-    printf("Cannot open file or file does not exsits.");
-    return 1;
-  }
-  else 
-  {
-    char buffer[1024];
-    char* ReadFromFile = fgets(buffer,sizeof(buffer),fp);
-    printf("%s\n",ReadFromFile);
-  }
-}
-
 int main(int argc,char** argv)
 {
-  parse("real.txt");
   // if there are no flags 
   if(argc==2 && strcmp(argv[1],"help")!=0){
     // declaration of delim 
