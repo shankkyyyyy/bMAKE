@@ -43,21 +43,13 @@ char* output_f(char *buffer,char *OutputName,FILE *fp)
 	else
 	{
 	  perror("Cannot read OutputName. ");
-	  return "failed";
+	  return NULL;
 	}
 	// if success; returns OutputName pointer.
 	free(buffer);	
 	return OutputName;
        
 }
-
-// debug function.
-int end(char *Filename,char *args,char *OutputName)
-{
-	printf("%-10s :%s \n%-10s :%s \n%-10s :%s \n","Filename",Filename,"args",args,OutputName,"OutputName");
-	return 0;
-}
-
 
 
 char* parse(char* filename)
@@ -67,7 +59,7 @@ char* parse(char* filename)
   char *buffer = malloc(BUFFER_d);
   char *Filename = malloc(BUFFER_d);
   char *OutputName = malloc(BUFFER_d);
-
+  char *Finaloutput = malloc(BUFFER_d * 3);
   // this opens a file discriptor for opeing the file 
   FILE *fp = fopen(filename,"r");
   // fp returns NULL if the fopen has failed. see docs on this. 
@@ -76,7 +68,7 @@ char* parse(char* filename)
     // strerr.
     perror("File can't be opened. \n");
     // 'failed' is the char* for return 1;
-    return "failed";
+    return NULL;
   }
 
   // i is the increment for the while loop; BAD PRACTICE.
@@ -131,7 +123,16 @@ char* parse(char* filename)
 	  OutputName =  output_f(buffer,OutputName,fp);
 	  // buffer's allocated memory has been free'ed from function-> output_f;
 	  int a = end(Filename,args,OutputName);
-	  return "success";
+	  strcpy(Finaloutput,Filename);
+	  strcat(Finaloutput," ");
+	  strcat(Finaloutput,args);
+	  strcat(Finaloutput," ");
+	  strcat(Finaloutput,OutputName);
+	  printf("%s",Finaloutput);
+	  free(OutputName);
+	  free(Filename);
+	  free(args);
+	  return Finaloutput;
 	}
 
         // this is for concateing the strings together after the first copying into buffer.
@@ -150,6 +151,6 @@ char* parse(char* filename)
     }
     
   }
-  return "passed";
+  return NULL;
 }
 
