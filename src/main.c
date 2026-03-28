@@ -2,10 +2,11 @@
 #include <stdbool.h> 
 #include <string.h>
 #include <stdlib.h> 
+#include "parse.h"
 
 int ReadFromFile_i(char* filename)
 {
-  FILE *fp = fopen(filename,O_RDONLY);
+  FILE *fp = fopen(filename,"r");
   if(fp==NULL)
   {
     printf("Cannot open file or file does not exsits.");
@@ -15,12 +16,13 @@ int ReadFromFile_i(char* filename)
   {
     char buffer[1024];
     char* ReadFromFile = fgets(buffer,sizeof(buffer),fp);
-    printf("%s\n",ReadFromFile)
+    printf("%s\n",ReadFromFile);
   }
 }
 
 int main(int argc,char** argv)
 {
+  parse("real.txt");
   // if there are no flags 
   if(argc==2 && strcmp(argv[1],"help")!=0){
     // declaration of delim 
@@ -54,6 +56,11 @@ int main(int argc,char** argv)
     free(buff);
     printf("Compiling %s.\n",NameOfTheProgram);
     return 0;
+  }
+
+  else if (strcmp(argv[1],"-comp")==0)
+  {
+  	char* string = parse("real.txt");
   }
   // if there are flags 
   else if (argc>=3 && strcmp(argv[1],"help")!=0)

@@ -9,6 +9,7 @@
 #include <string.h>
 // for bool operations 
 #include <stdbool.h>
+#include "parse.h"
 
 // this is a simple project for simple compiling of simple .c file's 
 // this can be called a knockoff of CMake or Cninja 
@@ -56,7 +57,7 @@ int end(char *Filename,char *args,char *OutputName)
 	free(Filename);
 	free(args);
 	free(OutputName);
-	goto main;
+	return 0;
 }
 
 
@@ -131,7 +132,8 @@ char* parse(char* filename)
 	   
 	  OutputName =  output_f(buffer,OutputName,fp);
 	  // buffer's allocated memory has been free'ed from function-> output_f;
-	  end(Filename,args,OutputName);
+	  int a = end(Filename,args,OutputName);
+	  return "success";
 	}
 
         // this is for concateing the strings together after the first copying into buffer.
@@ -153,8 +155,3 @@ char* parse(char* filename)
   return "passed";
 }
 
-int main()
-{
-  char* killi = parse("real.txt");
-  return 0;
-}

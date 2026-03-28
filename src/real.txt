@@ -1,9 +1,11 @@
 filename
-path.c
+filename.c
 args
 -lsd
 -wow
+-thisisaarg
+-thisalso
 endhl
 output
-nameishsankky
+output.elif
 endhl
