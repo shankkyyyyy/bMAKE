@@ -45,7 +45,7 @@ int config_BMake(char *source_file,char* output_file,char* flags,int NumOfFlags)
     }
     else
     {      printf("Aborting. Please remove the existing .Bmake.txt file if you want to create a new one.\n");
-      return NULL;  
+      return 1;  
   } 
 
 	write_to_file("[FILENAME]",".Bmake.txt");

@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
         if(result != 0)
         {   
             fprintf(stderr, "Error: Failed to create .Bmake.txt file.\n");
-            return NULL;
+            return 1;
         }
 
         printf("Bmake -s : For compiling the code.");
