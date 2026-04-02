@@ -1,156 +1,145 @@
-//
-// made by shankky !! 
-
-// include's 
 #include <stdio.h>
-// for memory allocation
-#include <stdlib.h> 
-// for string cutting,string manipulation's.
+#include <stdlib.h>
 #include <string.h>
-// for bool operations 
 #include <stdbool.h>
 #include "parse.h"
+#define BUFFER 1024
 
-// this is a simple project for simple compiling of simple .c file's 
-// this can be called a knockoff of CMake or Cninja 
-// this will have several bugs and memory problems !! if you find one please let me know 
+typedef struct FILE_INIT
+{
+	char *buffer;
+	char *arguments;
+	char *output_filename;
+	char *filename;
+	char *output; 
 
-// defuault buffer size.
-#define BUFFER_d 1024
+}FILE_INIT;
 
-// parsing function -> returns the system command for compiling the code
-// this is read from the .CCmake file 
-// the .CCmake file does not need to be in a particular order 
-
-
-// checks for outputname; this function is called by args while loop.
-char* output_f(char *buffer,char *OutputName,FILE *fp)
-{	// reads the file
-	if(fgets(buffer,BUFFER_d,fp)!=NULL)
+char *parse_filename(FILE *fp)
+{
+	FILE_INIT file;
+	file.filename = malloc(BUFFER);
+	if (file.filename==NULL)
 	{
-	   if(fgets(OutputName,BUFFER_d,fp)!=NULL)
-	   {
-		   printf("\nOutputName: %s\n",OutputName);   
-	   }
-	   else
-	   {
-	   	perror("Can't not read outputname. ");
-		return "failed";
-	   }
-	   
+		perror("Cannot allocate memory \n");
+		return NULL;
 	}
-	// else statement for failure.
+	
+	if(fgets(file.filename,BUFFER,fp)!=NULL)
+	{
+		return file.filename;	
+	}
+	
 	else
 	{
-	  perror("Cannot read OutputName. ");
-	  return NULL;
+		return NULL;
 	}
-	// if success; returns OutputName pointer.
-	free(buffer);	
-	return OutputName;
-       
 }
 
-
-char* parse(char* filename)
+char *parse_args(FILE *fp,FILE_INIT *file)
 {
-  // declaration of variables related to parsing; line 43 to see the use's of this 
-  char *args = malloc(BUFFER_d);
-  char *buffer = malloc(BUFFER_d);
-  char *Filename = malloc(BUFFER_d);
-  char *OutputName = malloc(BUFFER_d);
-  char *Finaloutput = malloc(BUFFER_d * 3);
-  // this opens a file discriptor for opeing the file 
-  FILE *fp = fopen(filename,"r");
-  // fp returns NULL if the fopen has failed. see docs on this. 
-  if (fp==NULL)
-  {
-    // strerr.
-    perror("File can't be opened. \n");
-    // 'failed' is the char* for return 1;
-    return NULL;
-  }
-
-  // i is the increment for the while loop; BAD PRACTICE.
-  int i = 1;
-  // loop for getting the first line or the contination of lines in the file; to know more read man fgets; 
-  while(fgets(buffer,BUFFER_d,fp)!=NULL)
-  {
-    // this removes newline from buffer.
-    strtok(buffer,"\n");
-    // inc the while loop;
-    i++;
-
-    // checks if buffer==filename
-    if(strcmp(buffer,"filename")==0)
-    {
-      // reads filename if it is not null
-      if(fgets(Filename,sizeof(Filename),fp)!=NULL)
-      {
-	// prints filename - remove this line !! debugging purpose only.
-	// restarts the while loop;
-        continue;
-      }
-      // if reading goes to fault this will end up printing error messages.
-      else 
-      {
-        perror("Reading has gone wrong. ");
-	    return NULL;
-      }
-
-    }
-    // checks if buffer == args 
-    else if (strcmp(buffer,"args")==0)
-    {
-     // new incrementer is placed
-      int j = 1;
-      // reads the file and puts the output into buffer if not null and removes the buffer's newline 
-      // all in the while loop.
-      while (fgets(buffer,BUFFER_d,fp)!=NULL && strtok(buffer,"\n"))
-      {
-
-        // j is for first time copying values into buffer. then no need for the strcpy function.
-        if (j==1)
-        {
-          strcpy(args,buffer);
-	  j++;
-	  continue;
-        }
-
-	if (strcmp(buffer,"endhl")==0)
+	bool time = true;
+	file->buffer = malloc(BUFFER);
+	while(fgets(file->buffer,BUFFER,fp)!=NULL)
 	{
-	   
-	  OutputName =  output_f(buffer,OutputName,fp);
-	  // buffer's allocated memory has been free'ed from function-> output_f;
-	  int a = end(Filename,args,OutputName);
-	  strcpy(Finaloutput,Filename);
-	  strcat(Finaloutput," ");
-	  strcat(Finaloutput,args);
-	  strcat(Finaloutput," ");
-	  strcat(Finaloutput,OutputName);
-	  printf("%s",Finaloutput);
-	  free(OutputName);
-	  free(Filename);
-	  free(args);
-	  return Finaloutput;
+	    strtok(file->buffer,"\n");
+	    if(strcmp(file->buffer,"[ENDOFARGUMENTS]")==0)
+	    {
+		free(file->buffer);
+		return file->arguments;
+	    }
+	    
+            else
+	    {
+		if(time)
+		{
+			strncpy(file->arguments,file->buffer,BUFFER - 1);
+			time = false;
+		}
+		
+		else
+		{
+			strcat(file->arguments," ");
+			strcat(file->arguments,file->buffer);
+		}
+	    }
 	}
 
-        // this is for concateing the strings together after the first copying into buffer.
-        else if (!j==0)
-	{
-	// add space to args
-	 strcat(args," ");
-	 // concatenate the buffer to args
-         strcat(args,buffer);
-		 
-	 // prints the args 
-        }
-	// increments j by 1;
-      }
+}
 
-    }
-    
-  }
-  return NULL;
+char *parse_outputfilename(FILE *fp,FILE_INIT *file)
+{
+	if(fgets(file->output_filename,BUFFER,fp)!=NULL)
+	{
+		return file->output_filename;
+	}
+	
+	else
+	{
+		perror("Cannot read from File. \n");
+		return NULL;
+	}
+	
+}
+
+char *parse(char *filename)
+{	
+	FILE_INIT file_init;
+	file_init.buffer = malloc(BUFFER);
+	file_init.output_filename = malloc(BUFFER);
+	FILE *fp = fopen(filename,"r");
+	if (fp==NULL)
+	{
+		perror("Cannot open file. ");
+		return NULL;
+	}
+	file_init.filename = malloc(BUFFER);
+	while(fgets(file_init.buffer,BUFFER,fp)!=NULL)
+	  {	
+	    strtok(file_init.buffer,"\n");
+		if(strcmp(file_init.buffer,"[FILENAME]")==0)
+		  {
+		   file_init.filename = parse_filename(fp);
+	    	   strtok(file_init.filename,"\n");   
+                   if(file_init.filename==NULL)
+		     {
+		       return NULL;
+		     }  
+		
+		   else
+		      {
+		      }
+		  }
+		else if (strcmp(file_init.buffer,"[ARGUMENTS]")==0)
+			{
+			  file_init.arguments = malloc(BUFFER);
+			  file_init.arguments = parse_args(fp,&file_init);
+			}
+
+		else if (strcmp(file_init.buffer,"[OUTPUT]")==0)
+			{
+			  file_init.output_filename = parse_outputfilename(fp,&file_init);
+			  if(file_init.output_filename==NULL)
+			    {
+				perror("Returned NULL. \n");
+				return NULL;
+			    }
+			
+			}
+	
+	  }
+	
+
+	file_init.output = malloc(BUFFER * 2);
+	snprintf(file_init.output, BUFFER * 2, "%s %s %s", 
+		     file_init.filename, 
+             file_init.arguments, 
+             file_init.output_filename);
+	
+  free(file_init.arguments);
+  free(file_init.filename);
+  free(file_init.output_filename);
+  free(file_init.buffer);
+	return file_init.output;
 }
 

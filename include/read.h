@@ -1,8 +1,11 @@
 #ifndef READ_H
-#define READ_H 
+#define READ_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 int Istherefile_i(char* filename);
-int ReadFromFile_i(char* filename);
-int WriteToFile_i(char* contents);
+char* ReadFromFile_pC(char* filename);
 
 #endif

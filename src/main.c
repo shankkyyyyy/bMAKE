@@ -1,99 +1,64 @@
+// main.c
 #include <stdio.h>
-#include <stdbool.h> 
+#include <stdlib.h>
 #include <string.h>
-#include <stdlib.h> 
-#include "parse.h"
+//#include "/home/gigu/projects/Bmake/include/parse.h"
+//#include "/home/gigu/projects/Bmake/include/read.h"
+//#include "/home/gigu/projects/Bmake/include/write.h"
 
-int main(int argc,char** argv)
-{
-  // if there are no flags 
-  if(argc==2 && strcmp(argv[1],"help")!=0){
-    // declaration of delim 
-    const char *delim = ".";
-    // declaration of program name 
-    char *ProgramName = argv[1];
-    // printing to stdout 
-    printf("[#] Compiling %s  Using GCC [#]\n",ProgramName);
-    
-    // cutting down the '.' part from ProgramName for the output Name 
-    char *NameOfTheProgram = strtok(ProgramName,delim);
-    // simply fflushing *NO REASON*
-    fflush(stdout);
-    char *buff; 
-    
-    // allocating buffer for buff 
-    
-    buff = malloc(100*4);
-    
-    // copying the strings to buffer::buff 
-    strcpy(buff,"gcc ");
-    strcat(buff,ProgramName);
-    strcat(buff,".c ");
-    strcat(buff," -o ");
-    strcat(buff,NameOfTheProgram);
-    fflush(stdout);
-    
-    // running the parsed command through system 
-    system(buff);
-    // freeing memory 
-    free(buff);
-    printf("Compiling %s.\n",NameOfTheProgram);
-    return 0;
-  }
+#define BUFFER 1024
 
-  else if (strcmp(argv[1],"-comp")==0)
-  {
-  	char* string = parse("real.txt");
-  }
-  // if there are flags 
-  else if (argc>=3 && strcmp(argv[1],"help")!=0)
-  {
-    // declaration of variables ;
-    char *ProgramName = argv[1];
-    char *delim = ".";
+// Function declarations (fill these later)
+void print_help();
+void execute_command(const char *source_file, const char *output_file, const char *flags);
 
-    // parsing the output name;
-    char *CompiledProgramName = strtok(ProgramName,delim);
-    //allocating buffer through malloc 
-    char *buffer = malloc(100*4);
-    
-    printf("Compiling %s.",ProgramName);
-    // copying the gcc string into buffer after allocating memory 
-    strcpy(buffer,"gcc ");
-    
-    // catenates argv[i] to buffer with how many flags it has !! 
-
-    for (int i = 2;i<argc;i++)
-    {
-      if(strcmp(argv[i],"-w")==0)
-      {
-        strcat(buffer,"-Wall -Wextra ");
-      }
-      strcat(buffer,argv[i]);
-      strcat(buffer," ");
+int main(int argc, char **argv) {
+    if (argc == 1 || strcmp(argv[1], "help") == 0) {
+        print_help();
+        return 0;
     }
-    
-    // catenates hardcoded 
-    strcat(buffer,ProgramName);
-    strcat(buffer," -o ");
-    strcat(buffer,CompiledProgramName);
-    
-    //executing buffer to compile the code 
-    system(buffer);
 
-    // printing the result of executing buffer 
-    
-    printf("Compiled %s into %s.",ProgramName,CompiledProgramName);
-    // freeing buffer->compiling time needed buffer !
-    free(buffer);
+    if (argc < 3) {
+        fprintf(stderr, "Error: Not enough arguments.\n");
+        print_help();
+        return 1;
+    }
+
+    // Extract arguments (you can expand this)
+    const char *source_file = argv[1];
+    const char *output_file = argv[2];
+    const char *flags = (argc > 3) ? argv[3] : "";
+
+    // Execute command placeholder
+    execute_command(source_file, output_file, flags);
 
     return 0;
+}
 
-  }
-  else if (argc==1 || strcmp(argv[1],"help")==0)
-  {
-    printf("Help Menu.\n");
-    printf("Usage: cc demo.c demo -flags. \nFlags: -it can be of any type. \n");
-  }
+// Print a simple help menu
+void print_help() {
+    printf("Usage: Bmake <source_file> <output_file> [flags]\n");
+    printf("Example: Bmake source.c -lcrypto -o output\n");
+    printf("Flags:\n");
+    printf("  -l<library>   Link with library\n");
+    printf("  -o<output>    Specify output file\n");
+    printf("  help          Show this help menu\n");
+}
 
+// Execute command placeholder
+void execute_command(const char *source_file, const char *output_file, const char *flags) {
+    char command[BUFFER];
+
+    // Build the system command
+    snprintf(command, BUFFER, "gcc %s %s -o %s", source_file, flags, output_file);
+
+    printf("Executing: %s\n", command);
+
+    int status = system(command);
+    if (status == -1) {
+        perror("system");
+        exit(EXIT_FAILURE);
+    } else {
+        printf("Command executed with exit code: %d\n", WEXITSTATUS(status));
+    }
 }

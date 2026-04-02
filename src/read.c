@@ -32,7 +32,7 @@ char* ReadFromFile_pC(char* filename)
   if(fp==NULL)
   {
     printf("Cannot open file or file does not exsits.");
-    return "Error code 24.";
+    return NULL;
   }
   else 
   {
