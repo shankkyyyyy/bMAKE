@@ -1,0 +1,9 @@
+[FILENAME]
+main.c
+[ARGUMENTS]
+read.c
+parse.c
+write.c
+[ENDOFARGUMENTS]
+[OUTPUT]
+Bmake_new_worked

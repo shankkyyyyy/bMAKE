@@ -5,9 +5,7 @@
 #include <string.h>
 #include "../include/read.h"
 
-// function checks if there is a file named arg filename 
-// function returns int -> 1 for failed and 0 for success
-//
+// Checks if a file exists, returns 0 if exists, 1 if not
 int file_exists(char* file_path)
 {
   // opens a fd to fp 
@@ -20,10 +18,7 @@ int file_exists(char* file_path)
         return 0;
 }
 
-// this function reads from the arg filename
-// this returns a pointer char 
-// returns the whole fileoutput 
-
+// Reads entire file content and returns as string
 char* read_file_content(char* file_path)
 {
   // opens a fd -> fp.
@@ -40,6 +35,7 @@ char* read_file_content(char* file_path)
     char *file_content = malloc(sizeof(char) * 100);
     char line_buffer[1024];
     int is_first_line = 0;
+    // Read all lines and concatenate
     while(fgets(line_buffer, sizeof(line_buffer), file_pointer) != NULL)
     {
       if(is_first_line == 0)
@@ -58,17 +54,4 @@ char* read_file_content(char* file_path)
   }
 }
 
-int main()
-{
-  char *read_result = read_file_content("test.txt");
-  if (strcmp("Error code 24.", read_result) == 0)
-  {
-    printf("Error Code 24.");
-    return 1;
-  }
-  else{
-    printf("%s", read_result);
-    free(read_result);
-    return 0;
-  }
-}
+

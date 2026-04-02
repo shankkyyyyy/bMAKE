@@ -5,6 +5,7 @@
 #include "../include/parse.h"
 #define BUFFER_SIZE 1024
 
+// Parses the source filename from the build file
 char *parse_source_filename(FILE *input_file)
 {
 	BuildFileInfo file_info;
@@ -26,6 +27,7 @@ char *parse_source_filename(FILE *input_file)
 	}
 }
 
+// Parses command line arguments from the build file
 char *parse_command_arguments(FILE *input_file, BuildFileInfo *file_info)
 {
 	bool is_first_argument = true;
@@ -57,6 +59,7 @@ char *parse_command_arguments(FILE *input_file, BuildFileInfo *file_info)
 
 }
 
+// Parses the output filename from the build file
 char *parse_output_file_name(FILE *input_file, BuildFileInfo *file_info)
 {
 	if(fgets(file_info->output_file_name, BUFFER_SIZE, input_file) != NULL)
@@ -72,6 +75,7 @@ char *parse_output_file_name(FILE *input_file, BuildFileInfo *file_info)
 	
 }
 
+// Main function to parse the entire build file
 char *parse_build_file(char *file_path)
 {	
 	BuildFileInfo file_info;
@@ -84,6 +88,7 @@ char *parse_build_file(char *file_path)
 		return NULL;
 	}
 	file_info.source_file_name = malloc(BUFFER_SIZE);
+	// Parse each section of the build file
 	while(fgets(file_info.input_buffer, BUFFER_SIZE, input_file) != NULL)
 	  {	
 	    strtok(file_info.input_buffer, "\n");
@@ -121,7 +126,7 @@ char *parse_build_file(char *file_path)
 	
 
 	file_info.command_output = malloc(BUFFER_SIZE * 2);
-	snprintf(file_info.command_output, BUFFER_SIZE * 2, "%s %s %s", 
+	snprintf(file_info.command_output, BUFFER_SIZE * 2, "gcc %s %s -o %s", 
 		     file_info.source_file_name, 
              file_info.command_arguments, 
              file_info.output_file_name);
@@ -130,5 +135,9 @@ char *parse_build_file(char *file_path)
   free(file_info.source_file_name);
   free(file_info.output_file_name);
   free(file_info.input_buffer);
-	return file_info.command_output;
+
+  // debug function. 
+  printf("\n%s\n",file_info.command_output);
+  fflush(stdout);
+  return file_info.command_output;
 }
