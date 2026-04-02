@@ -4,7 +4,7 @@
 #include <string.h>
 //#include "/home/gigu/projects/Bmake/include/parse.h"
 //#include "/home/gigu/projects/Bmake/include/read.h"
-//#include "/home/gigu/projects/Bmake/include/write.h"
+#include "../include/write.h"
 
 #define BUFFER 1024
 
@@ -23,7 +23,33 @@ int main(int argc, char **argv) {
         print_help();
         return 1;
     }
+    if (strcmp(argv[1],"-e")==0)
+    {
+        // Bmake -e main.c -lcrypto -sdl -o output 
+        char *source_file = argv[2];
+        char *flags = malloc(BUFFER);
+        char *output_file = malloc(BUFFER);
+        flags[0] = '\0';
+        for(int i = 3;i<argc;i++)
+        {
+            if(strcmp(argv[i],"-o")==0)
+            {
+                strcpy(output_file,argv[i + 1]);
+                break;
+            }
+            else 
+            {
+                strcat(flags, argv[i]);
+                strcat(flags, " ");
+            }
+        }
 
+        printf("source_file: %s\noutput_file: %s\nflags: %s", source_file, output_file, flags);
+        
+	free(flags);
+        free(output_file);
+        return 0;
+    }
     // Extract arguments (you can expand this)
     const char *source_file = argv[1];
     const char *output_file = argv[2];

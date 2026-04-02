@@ -1,3 +1,4 @@
+#pragma once
 #ifndef PARSE_H
 #define PARSE_H
 
@@ -6,21 +7,21 @@
 #include <string.h>
 #include <stdbool.h>
 
-#define BUFFER 1024
+#define BUFFER_SIZE 1024
 
-typedef struct FILE_INIT
+typedef struct BuildFileInfo
 {
-	char *buffer;
-	char *arguments;
-	char *output_filename;
-	char *filename;
-	char *output; 
+	char *input_buffer;
+	char *command_arguments;
+	char *output_file_name;
+	char *source_file_name;
+	char *command_output; 
 
-} FILE_INIT;
+} BuildFileInfo;
 
-char *parse_filename(FILE *fp);
-char *parse_args(FILE *fp, FILE_INIT *file);
-char *parse_outputfilename(FILE *fp, FILE_INIT *file);
-char *parse(char *filename);
+char *parse_source_filename(FILE *input_file);
+char *parse_command_arguments(FILE *input_file, BuildFileInfo *file_info);
+char *parse_output_file_name(FILE *input_file, BuildFileInfo *file_info);
+char *parse_build_file(char *file_path);
 
 #endif

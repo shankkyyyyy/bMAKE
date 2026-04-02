@@ -3,17 +3,18 @@
 #include <stdlib.h> 
 #include <stdio.h> 
 #include <string.h>
+#include "../include/read.h"
 
 // function checks if there is a file named arg filename 
 // function returns int -> 1 for failed and 0 for success
 //
-int Istherefile_i(char* filename)
+int file_exists(char* file_path)
 {
   // opens a fd to fp 
-  FILE *fp = fopen(filename,"r");
+  FILE *file_pointer = fopen(file_path, "r");
   // returns NULL if failed
   
-  if(fp==NULL)
+  if(file_pointer == NULL)
   	return 1; // error handling must be done by the called of this function.
   else 
         return 0;
@@ -23,51 +24,51 @@ int Istherefile_i(char* filename)
 // this returns a pointer char 
 // returns the whole fileoutput 
 
-char* ReadFromFile_pC(char* filename)
+char* read_file_content(char* file_path)
 {
   // opens a fd -> fp.
   
   
-  FILE *fp = fopen(filename,"r");
-  if(fp==NULL)
+  FILE *file_pointer = fopen(file_path, "r");
+  if(file_pointer == NULL)
   {
     printf("Cannot open file or file does not exsits.");
     return NULL;
   }
   else 
   {
-    char *ReadOutput = malloc(sizeof(char)*100);
-    char buffer[1024];
-    int i = 0;
-    while(fgets(buffer,sizeof(buffer),fp)!=NULL)
+    char *file_content = malloc(sizeof(char) * 100);
+    char line_buffer[1024];
+    int is_first_line = 0;
+    while(fgets(line_buffer, sizeof(line_buffer), file_pointer) != NULL)
     {
-      if(i==0)
+      if(is_first_line == 0)
       {
-        strcpy(ReadOutput,buffer);
-        i++;
+        strcpy(file_content, line_buffer);
+        is_first_line++;
       }
       else{
-        strcat(ReadOutput,buffer);
+        strcat(file_content, line_buffer);
       }
       printf("-Read from file is successful.\n");
     }
 
-    free(fp);
-    return ReadOutput;
+    free(file_pointer);
+    return file_content;
   }
 }
 
 int main()
 {
-  char *o_RfromFile = ReadFromFile_i("test.txt");
-  if (strcmp("Error code 24.",o_RfromFile)==0)
+  char *read_result = read_file_content("test.txt");
+  if (strcmp("Error code 24.", read_result) == 0)
   {
     printf("Error Code 24.");
     return 1;
   }
   else{
-    printf("%s",o_RfromFile);
-    free(o_RfromFile);
+    printf("%s", read_result);
+    free(read_result);
     return 0;
   }
 }

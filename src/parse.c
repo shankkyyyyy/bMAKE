@@ -2,32 +2,22 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "parse.h"
-#define BUFFER 1024
+#include "../include/parse.h"
+#define BUFFER_SIZE 1024
 
-typedef struct FILE_INIT
+char *parse_source_filename(FILE *input_file)
 {
-	char *buffer;
-	char *arguments;
-	char *output_filename;
-	char *filename;
-	char *output; 
-
-}FILE_INIT;
-
-char *parse_filename(FILE *fp)
-{
-	FILE_INIT file;
-	file.filename = malloc(BUFFER);
-	if (file.filename==NULL)
+	BuildFileInfo file_info;
+	file_info.source_file_name = malloc(BUFFER_SIZE);
+	if (file_info.source_file_name == NULL)
 	{
 		perror("Cannot allocate memory \n");
 		return NULL;
 	}
 	
-	if(fgets(file.filename,BUFFER,fp)!=NULL)
+	if(fgets(file_info.source_file_name, BUFFER_SIZE, input_file) != NULL)
 	{
-		return file.filename;	
+		return file_info.source_file_name;	
 	}
 	
 	else
@@ -36,42 +26,42 @@ char *parse_filename(FILE *fp)
 	}
 }
 
-char *parse_args(FILE *fp,FILE_INIT *file)
+char *parse_command_arguments(FILE *input_file, BuildFileInfo *file_info)
 {
-	bool time = true;
-	file->buffer = malloc(BUFFER);
-	while(fgets(file->buffer,BUFFER,fp)!=NULL)
+	bool is_first_argument = true;
+	file_info->input_buffer = malloc(BUFFER_SIZE);
+	while(fgets(file_info->input_buffer, BUFFER_SIZE, input_file) != NULL)
 	{
-	    strtok(file->buffer,"\n");
-	    if(strcmp(file->buffer,"[ENDOFARGUMENTS]")==0)
+	    strtok(file_info->input_buffer, "\n");
+	    if(strcmp(file_info->input_buffer, "[ENDOFARGUMENTS]") == 0)
 	    {
-		free(file->buffer);
-		return file->arguments;
+		free(file_info->input_buffer);
+		return file_info->command_arguments;
 	    }
 	    
             else
 	    {
-		if(time)
+		if(is_first_argument)
 		{
-			strncpy(file->arguments,file->buffer,BUFFER - 1);
-			time = false;
+			strncpy(file_info->command_arguments, file_info->input_buffer, BUFFER_SIZE - 1);
+			is_first_argument = false;
 		}
 		
 		else
 		{
-			strcat(file->arguments," ");
-			strcat(file->arguments,file->buffer);
+			strcat(file_info->command_arguments, " ");
+			strcat(file_info->command_arguments, file_info->input_buffer);
 		}
 	    }
 	}
 
 }
 
-char *parse_outputfilename(FILE *fp,FILE_INIT *file)
+char *parse_output_file_name(FILE *input_file, BuildFileInfo *file_info)
 {
-	if(fgets(file->output_filename,BUFFER,fp)!=NULL)
+	if(fgets(file_info->output_file_name, BUFFER_SIZE, input_file) != NULL)
 	{
-		return file->output_filename;
+		return file_info->output_file_name;
 	}
 	
 	else
@@ -82,26 +72,26 @@ char *parse_outputfilename(FILE *fp,FILE_INIT *file)
 	
 }
 
-char *parse(char *filename)
+char *parse_build_file(char *file_path)
 {	
-	FILE_INIT file_init;
-	file_init.buffer = malloc(BUFFER);
-	file_init.output_filename = malloc(BUFFER);
-	FILE *fp = fopen(filename,"r");
-	if (fp==NULL)
+	BuildFileInfo file_info;
+	file_info.input_buffer = malloc(BUFFER_SIZE);
+	file_info.output_file_name = malloc(BUFFER_SIZE);
+	FILE *input_file = fopen(file_path, "r");
+	if (input_file == NULL)
 	{
 		perror("Cannot open file. ");
 		return NULL;
 	}
-	file_init.filename = malloc(BUFFER);
-	while(fgets(file_init.buffer,BUFFER,fp)!=NULL)
+	file_info.source_file_name = malloc(BUFFER_SIZE);
+	while(fgets(file_info.input_buffer, BUFFER_SIZE, input_file) != NULL)
 	  {	
-	    strtok(file_init.buffer,"\n");
-		if(strcmp(file_init.buffer,"[FILENAME]")==0)
-		  {
-		   file_init.filename = parse_filename(fp);
-	    	   strtok(file_init.filename,"\n");   
-                   if(file_init.filename==NULL)
+	    strtok(file_info.input_buffer, "\n");
+		if(strcmp(file_info.input_buffer, "[FILENAME]") == 0)
+		{
+		  file_info.source_file_name = parse_source_filename(input_file);
+	    	   strtok(file_info.source_file_name, "\n");   
+                   if(file_info.source_file_name == NULL)
 		     {
 		       return NULL;
 		     }  
@@ -110,16 +100,16 @@ char *parse(char *filename)
 		      {
 		      }
 		  }
-		else if (strcmp(file_init.buffer,"[ARGUMENTS]")==0)
+		else if (strcmp(file_info.input_buffer, "[ARGUMENTS]") == 0)
 			{
-			  file_init.arguments = malloc(BUFFER);
-			  file_init.arguments = parse_args(fp,&file_init);
+			  file_info.command_arguments = malloc(BUFFER_SIZE);
+			  file_info.command_arguments = parse_command_arguments(input_file, &file_info);
 			}
 
-		else if (strcmp(file_init.buffer,"[OUTPUT]")==0)
+		else if (strcmp(file_info.input_buffer, "[OUTPUT]") == 0)
 			{
-			  file_init.output_filename = parse_outputfilename(fp,&file_init);
-			  if(file_init.output_filename==NULL)
+			  file_info.output_file_name = parse_output_file_name(input_file, &file_info);
+			  if(file_info.output_file_name == NULL)
 			    {
 				perror("Returned NULL. \n");
 				return NULL;
@@ -130,16 +120,15 @@ char *parse(char *filename)
 	  }
 	
 
-	file_init.output = malloc(BUFFER * 2);
-	snprintf(file_init.output, BUFFER * 2, "%s %s %s", 
-		     file_init.filename, 
-             file_init.arguments, 
-             file_init.output_filename);
+	file_info.command_output = malloc(BUFFER_SIZE * 2);
+	snprintf(file_info.command_output, BUFFER_SIZE * 2, "%s %s %s", 
+		     file_info.source_file_name, 
+             file_info.command_arguments, 
+             file_info.output_file_name);
 	
-  free(file_init.arguments);
-  free(file_init.filename);
-  free(file_init.output_filename);
-  free(file_init.buffer);
-	return file_init.output;
+  free(file_info.command_arguments);
+  free(file_info.source_file_name);
+  free(file_info.output_file_name);
+  free(file_info.input_buffer);
+	return file_info.command_output;
 }
-

@@ -1,3 +1,4 @@
+#pragma once
 #ifndef READ_H
 #define READ_H
 
@@ -5,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int Istherefile_i(char* filename);
-char* ReadFromFile_pC(char* filename);
+int file_exists(char* file_path);
+char* read_file_content(char* file_path);
 
 #endif
