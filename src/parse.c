@@ -12,7 +12,7 @@ char *parse_source_filename(FILE *input_file)
 	file_info.source_file_name = malloc(BUFFER_SIZE);
 	if (file_info.source_file_name == NULL)
 	{
-		perror("Cannot allocate memory \n");
+		perror("ERROR: parse_source_filename malloc failed");
 		return NULL;
 	}
 	
@@ -69,7 +69,7 @@ char *parse_output_file_name(FILE *input_file, BuildFileInfo *file_info)
 	
 	else
 	{
-		perror("Cannot read from File. \n");
+		perror("ERROR: parse_output_file_name failed reading line");
 		return NULL;
 	}
 	
@@ -84,7 +84,9 @@ char *parse_build_file(char *file_path)
 	FILE *input_file = fopen(file_path, "r");
 	if (input_file == NULL)
 	{
-		perror("Cannot open file. ");
+		perror("ERROR: parse_build_file cannot open input file");
+		free(file_info.input_buffer);
+		free(file_info.output_file_name);
 		return NULL;
 	}
 	file_info.source_file_name = malloc(BUFFER_SIZE);
@@ -98,6 +100,9 @@ char *parse_build_file(char *file_path)
 	    	   strtok(file_info.source_file_name, "\n");   
                    if(file_info.source_file_name == NULL)
 		     {
+		       fclose(input_file);
+		       free(file_info.input_buffer);
+		       free(file_info.output_file_name);
 		       return NULL;
 		     }  
 		
@@ -117,6 +122,10 @@ char *parse_build_file(char *file_path)
 			  if(file_info.output_file_name == NULL)
 			    {
 				perror("Returned NULL. \n");
+				fclose(input_file);
+				free(file_info.input_buffer);
+				free(file_info.command_arguments);
+				free(file_info.source_file_name);
 				return NULL;
 			    }
 			
@@ -136,8 +145,9 @@ char *parse_build_file(char *file_path)
   free(file_info.output_file_name);
   free(file_info.input_buffer);
 
-  // debug function. 
-  printf("\n%s\n",file_info.command_output);
+	// debug output from parsed config
+	printf("INFO: parsed gcc command '%s'\n", file_info.command_output);
   fflush(stdout);
+  fclose(input_file);
   return file_info.command_output;
 }

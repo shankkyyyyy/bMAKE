@@ -1,0 +1,27 @@
+PARSE.C - Configuration File Parser
+==================================
+
+Purpose
+-------
+parse.c reads and interprets the .Bmake.txt configuration file, extracting source files, arguments, and output names to construct GCC commands.
+
+Key Functions
+-------------
+- parse_build_file(): Main parser that reads the file and builds the command string.
+- parse_source_filename(): Extracts the source file name.
+- parse_command_arguments(): Collects compilation flags and libraries.
+- parse_output_file_name(): Gets the output executable name.
+
+Usefulness
+----------
+This module enables repeatable builds by parsing human-readable config files. It's essential for the `-s` (build) mode, allowing users to save and reuse build settings without re-entering commands.
+
+Dependencies
+------------
+- Uses parse.h for struct definitions.
+- Standard C libraries for file I/O and string manipulation.
+
+Notes
+-----
+- Handles memory allocation carefully to avoid leaks.
+- Supports sections: [FILENAME], [ARGUMENTS], [OUTPUT], [ENDOFARGUMENTS].

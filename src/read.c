@@ -27,7 +27,7 @@ char* read_file_content(char* file_path)
   FILE *file_pointer = fopen(file_path, "r");
   if(file_pointer == NULL)
   {
-    printf("Cannot open file or file does not exsits.");
+    printf("ERROR: unable to open '%s' for reading.\n", file_path);
     return NULL;
   }
   else 
@@ -46,10 +46,10 @@ char* read_file_content(char* file_path)
       else{
         strcat(file_content, line_buffer);
       }
-      printf("-Read from file is successful.\n");
+      printf("DEBUG: read line from '%s': %s", file_path, line_buffer);
     }
 
-    free(file_pointer);
+    fclose(file_pointer);
     return file_content;
   }
 }

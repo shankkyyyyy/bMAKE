@@ -1,0 +1,32 @@
+READ.C & WRITE.C - File I/O Operations
+=====================================
+
+Purpose
+-------
+These files handle reading from and writing to files, supporting config file management and argument appending.
+
+READ.C Functions
+----------------
+- file_exists(): Checks if a file is accessible.
+- read_file_content(): Loads entire file into a string (used for debugging/parsing).
+
+WRITE.C Functions
+-----------------
+- write_to_file(): Appends text to a file with automatic newlines.
+- config_BMake(): Generates the initial .Bmake.txt config file.
+- write_args(): Inserts new arguments into the config after the first 3 lines.
+
+Usefulness
+----------
+READ.C ensures configs exist before building, preventing errors.
+WRITE.C creates and modifies configs, enabling dynamic build customization. Together, they make BMAKE flexible for iterative development.
+
+Dependencies
+------------
+- read.h and write.h for declarations.
+- Standard file I/O functions.
+
+Notes
+-----
+- write_to_file() ensures clean, newline-separated output.
+- write_args() uses temp files to insert content precisely, avoiding append-only issues.

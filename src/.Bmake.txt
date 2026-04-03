@@ -1,9 +1,10 @@
 [FILENAME]
 main.c
 [ARGUMENTS]
-read.c
-parse.c
-write.c
+args
+new
+-lssl
+-sdl
 [ENDOFARGUMENTS]
 [OUTPUT]
-Bmake_new_worked
+output.exe

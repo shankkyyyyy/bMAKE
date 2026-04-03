@@ -53,42 +53,59 @@ int main(int argc, char **argv) {
 
         int result = config_BMake(source_file, output_file, flags, NumOfFlags);
         if(result != 0)
-        {   
-            fprintf(stderr, "Error: Failed to create .Bmake.txt file.\n");
+        {
+            fprintf(stderr, "\033[1;31mERROR:\033[0m Could not write .Bmake.txt (config save failed).\n");
             return 1;
         }
 
-        printf("Bmake -s : For compiling the code.");
+        printf("\033[1;32mSUCCESS:\033[0m Build config saved. Run 'Bmake -s' next to compile.\n");
 
+    }
+
+    else if (strcmp(argv[1],"-a")==0)
+    {
+        printf("INFO: adding new arguments to existing .Bmake.txt\n");
+        if(file_exists(".Bmake.txt") != 0)
+        {
+            printf("\033[1;31mERROR:\033[0m Missing .Bmake.txt; run 'Bmake -e <src> -o <out>' first.\n");
+            return 1;   
+        }
+        
+        for (int i = 2; i < argc; i++)
+        {
+            write_args(argv[i], ".Bmake.txt");
+        }
+        printf("INFO: Arguments added. Run 'Bmake -s' next to compile with new arguments.\n");
     }
 
     else if (strcmp(argv[1],"-s")==0)
     {
-        printf("here.");
-        if(file_exists(".Bmake.txt")!=0)
+        printf("INFO: Starting build from config .Bmake.txt\n");
+        if(file_exists(".Bmake.txt") != 0)
         {
-            printf("print here help menu ! and explain to that guy okay.");
+            printf("\033[1;31mERROR:\033[0m Missing .Bmake.txt; run 'Bmake -e <src> -o <out>' first.\n");
         }
 
         char *output = parse_build_file(".Bmake.txt");
-        if(output==NULL)
+        if(output == NULL)
         {
-            perror("parsing.");
+            perror("\033[1;31mERROR:\033[0m parse_build_file failed");
             return 1;
         }
 
         char command[BUFFER];
 
         strcpy(command,output);
+        free(output);
         int status = system(command);
         if(status == -1)
         {
-            perror("system");
+            perror("\033[1;31mERROR:\033[0m system call failed");
             return 1;
         }
         else
         {
-            printf("successfully compiled the file. \n");
+            printf("\033[1;32mSUCCESS:\033[0m Compilation completed (exit code %d).\n", WEXITSTATUS(status));
         }
 
     }
@@ -98,12 +115,13 @@ int main(int argc, char **argv) {
 
 // Print a simple help menu
 void print_help() {
-    printf("Usage: Bmake <source_file> <output_file> [flags]\n");
-    printf("Example: Bmake source.c -lcrypto -o output\n");
-    printf("Flags:\n");
-    printf("  -l<library>   Link with library\n");
-    printf("  -o<output>    Specify output file\n");
-    printf("  help          Show this help menu\n");
+    printf("\033[1;36mUsage:\033[0m Bmake [command] [options]\n");
+    printf("\033[1;33mExample:\033[0m Bmake -e main.c -o output.elf -a ' -lcrypto -sdl'\n");
+    printf("\033[1;35mCommands:\033[0m\n");
+    printf("  \033[1;32m-e\033[0m <src>       Generate .Bmake.txt config\n");
+    printf("  \033[1;32m-s\033[0m            Read config and build output\n");
+    printf("  \033[1;32m-a\033[0m <arg>       Append one arg to ARGUMENTS section\n");
+    printf("  \033[1;32mhelp\033[0m       Show this help menu\n");
 }
 
 // Execute command placeholder
@@ -113,7 +131,7 @@ void execute_command(const char *source_file, const char *output_file, const cha
     // Build the system command
     snprintf(command, BUFFER, "gcc %s %s -o %s", source_file, flags, output_file);
 
-    printf("Executing: %s\n", command);
+    printf("INFO: Running build command: %s\n", command);
 
     int status = system(command);
     if (status == -1) {

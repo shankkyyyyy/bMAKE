@@ -3,14 +3,14 @@
 #include <string.h>
 #include "../include/write.h"
 #include "../include/read.h"
-
+#define BUFFER_ 512
 // Appends text content to a file
 int write_to_file(char* text_content, char* file_path)
 {
   FILE *file_pointer = fopen(file_path, "a");
   if (file_pointer == NULL)
   {
-    printf("File pointer can't be initialised.\n");
+    printf("ERROR: cannot open '%s' for append.\n", file_path);
       return 1;
   }
   
@@ -21,12 +21,12 @@ int write_to_file(char* text_content, char* file_path)
   
   if (write_result < 0)
   {
-    printf("Can't not write to the given file.\n");
+    printf("ERROR: write failed for '%s'.\n", file_path);
     return 1;
   }
   else 
   { 
-    printf("Written to file.\n");
+    printf("INFO: appended '%s' to '%s'.\n", text_content, file_path);
     return 0;
   }
 }
@@ -37,7 +37,7 @@ int config_BMake(char *source_file,char* output_file,char* flags,int NumOfFlags)
   int file_exists_result = file_exists(".Bmake.txt");
   if(file_exists_result == 0)
   {
-    printf("There is already a Bmake config file. Do you want to overwrite it? (y/n) \n");
+    printf("WARNING: .Bmake.txt already exists, overwrite? (y/n) ");
     char user_input[10];
     scanf("%s", user_input);
     if(strcmp(user_input, "y") == 0)
@@ -72,4 +72,53 @@ int config_BMake(char *source_file,char* output_file,char* flags,int NumOfFlags)
 	return 0;
 }
 
+}
+
+int write_args(char *args,char *filename)
+{
+  FILE *fp = fopen(filename, "r");
+  if (fp == NULL)
+  {
+    printf("ERROR: cannot open '%s' for read.\n", filename);
+    return 1;
+  }
+
+  FILE *tmp = fopen(".Bmake.tmp", "w");
+  if (tmp == NULL)
+  {
+    printf("ERROR: cannot open temporary file for write.\n");
+    fclose(fp);
+    return 1;
+  }
+
+  char line[BUFFER_];
+  int line_count = 0;
+
+  // copy first three lines to temp
+  while (line_count < 3 && fgets(line, sizeof(line), fp) != NULL)
+  {
+    fputs(line, tmp);
+    line_count++;
+  }
+
+  // write args after first three lines
+  fprintf(tmp, "%s\n", args);
+
+  // copy remaining file content
+  while (fgets(line, sizeof(line), fp) != NULL)
+  {
+    fputs(line, tmp);
+  }
+
+  fclose(fp);
+  fclose(tmp);
+
+  // replace original with temporary file
+  if (remove(filename) != 0 || rename(".Bmake.tmp", filename) != 0)
+  {
+    printf("ERROR: could not replace '%s' with updated content.\n", filename);
+    return 1;
+  }
+
+  return 0;
 }

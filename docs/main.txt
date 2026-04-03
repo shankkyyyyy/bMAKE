@@ -1,0 +1,26 @@
+MAIN.C - Program Entry Point
+============================
+
+Purpose
+-------
+main.c serves as the entry point for the BMAKE build system. It handles command-line arguments, orchestrates the build process, and provides user feedback through colored console output.
+
+Key Functions
+-------------
+- main(): Parses CLI args and dispatches to appropriate modes (-e, -s, -a, help).
+- print_help(): Displays usage information with colored formatting.
+- execute_command(): Builds and runs GCC commands (legacy, not used in current flow).
+
+Usefulness
+----------
+This file ties everything together, making BMAKE user-friendly. It validates inputs, calls config generation/parsing, and ensures proper memory management. Without it, the program wouldn't interact with users effectively.
+
+Dependencies
+------------
+- Relies on parse.h, read.h, write.h for functionality.
+- Uses standard libraries: stdio, stdlib, string.
+
+Notes
+-----
+- Includes colored ANSI escape codes for terminal output.
+- Handles errors gracefully with descriptive messages.
