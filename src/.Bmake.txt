@@ -1,10 +1,7 @@
 [FILENAME]
 main.c
 [ARGUMENTS]
-args
-new
--lssl
--sdl
+-Wextra
 [ENDOFARGUMENTS]
 [OUTPUT]
-output.exe
+main

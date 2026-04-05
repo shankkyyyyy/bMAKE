@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h> 
 #include <string.h>
+#include <unistd.h>
 #include "../include/write.h"
 #include "../include/read.h"
 #define BUFFER_ 512
@@ -37,18 +38,25 @@ int config_BMake(char *source_file,char* output_file,char* flags,int NumOfFlags)
   int file_exists_result = file_exists(".Bmake.txt");
   if(file_exists_result == 0)
   {
-    printf("WARNING: .Bmake.txt already exists, overwrite? (y/n) ");
+    printf("WARNING: .Bmake.txt already exists, overwrite? (y/n): \n");
+    fflush(stdout);
     char user_input[10];
     scanf("%s", user_input);
     if(strcmp(user_input, "y") == 0)
     {      remove(".Bmake.txt");
     }
     else
-    {      printf("Aborting. Please remove the existing .Bmake.txt file if you want to create a new one.\n");
+    {      printf("INFO: User chose not to overwrite existing config.\n");
       return 1;  
-  } 
+  }
+  }
+	
+  else
+  {
+	system("touch .Bmake.txt");
+  }
 
-	write_to_file("[FILENAME]",".Bmake.txt");
+  write_to_file("[FILENAME]",".Bmake.txt");
   write_to_file(source_file,".Bmake.txt");
   write_to_file("[ARGUMENTS]",".Bmake.txt");
 
@@ -72,7 +80,7 @@ int config_BMake(char *source_file,char* output_file,char* flags,int NumOfFlags)
 	return 0;
 }
 
-}
+
 
 int write_args(char *args,char *filename)
 {
